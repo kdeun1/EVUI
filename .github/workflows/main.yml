@@ -1,0 +1,40 @@
+name: Vue build
+on:
+  push:                               # Branch 에서 push이벤트가 일어났을 때 실행
+    branches:
+      - 2.0
+
+jobs:                                 # Job 설정
+  build:                              # Job ID
+    runs-on: ubuntu-18.04             # Job 가상환경 인스턴스
+    steps:
+      - name: Checkout source code    # repository checkout
+        uses: actions/checkout@2.0 # Uses를 통한 외부 설정 가져오기: 자신의 레포지토리 소스 받아오기
+
+      - name: Cache node modules      # node modules caching
+        uses: actions/cache@v1
+        with:
+          # path: 저장하고 불러올 캐시 대상 폴더
+          path: node_modules
+          # key: 저장하고 불러올 때 식별할 수 있는 키 값
+          key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
+          # restore-keys(optional): 캐시 key가 일치하는 것이 없을 때, 차선책으로 캐싱폴더를 찾는 key
+          restore-keys: |
+            ${{ runner.OS }}-build-
+            ${{ runner.OS }}
+
+      - name: Install Dependencies    # 의존파일 설치
+        run: npm install
+
+      - name: Build                   # Vue Build
+        run: npm run build
+
+      - name: Deploy                  # AWS S3에 배포
+        env:
+          AWS_ACCESS_KEY_ID: '${{ secrets.AWS_ACCESS_KEY_ID }}'
+          AWS_SECRET_ACCESS_KEY: '${{ secrets.AWS_SECRET_ACCESS_KEY }}'
+        run: |
+          aws s3 cp \
+            --recursive \
+            --region ap-northeast-2 \
+            dist s3://github-action-vue-proj
