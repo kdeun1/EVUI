@@ -11,18 +11,6 @@ jobs:                                 # Job 설정
       - name: Checkout source code    # repository checkout
         uses: actions/checkout@master # Uses를 통한 외부 설정 가져오기: 자신의 레포지토리 소스 받아오기
 
-      - name: Cache node modules      # node modules caching
-        uses: actions/cache@v1
-        with:
-          # path: 저장하고 불러올 캐시 대상 폴더
-          path: node_modules
-          # key: 저장하고 불러올 때 식별할 수 있는 키 값
-          key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
-          # restore-keys(optional): 캐시 key가 일치하는 것이 없을 때, 차선책으로 캐싱폴더를 찾는 key
-          restore-keys: |
-            ${{ runner.OS }}-build-
-            ${{ runner.OS }}
-
       - name: Install Dependencies    # 의존파일 설치
         run: npm install
 
