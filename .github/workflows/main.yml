@@ -15,7 +15,7 @@ jobs:                                 # Job 설정
         run: npm install
 
       - name: Build                   # Vue Build
-        run: npm run build
+        run: npm run docs_build
 
       - name: Deploy                  # AWS S3에 배포
         env:
@@ -25,4 +25,4 @@ jobs:                                 # Job 설정
           aws s3 cp \
             --recursive \
             --region ap-northeast-2 \
-            dist s3://github-action-vue-proj
+            dist_docs s3://github-action-vue-proj
